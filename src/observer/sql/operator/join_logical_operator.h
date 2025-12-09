@@ -45,6 +45,9 @@ public:
 
   auto add_join_predicate(unique_ptr<Expression> &&predicate) { join_predicates_.push_back(std::move(predicate)); }
 
+  // 获取 predicate_op_ 中的所有表达式
+  LogicalOperator *predicate_oper() { return predicate_op_; }
+
   unique_ptr<LogicalProperty> find_log_prop(const vector<LogicalProperty *> &log_props) override
   {
     if (log_props.size() != 2) {

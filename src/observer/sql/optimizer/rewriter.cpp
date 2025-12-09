@@ -17,18 +17,15 @@ See the Mulan PSL v2 for more details. */
 #include "sql/operator/logical_operator.h"
 #include "sql/optimizer/expression_rewriter.h"
 #include "sql/optimizer/predicate_pushdown_rewriter.h"
-#include "sql/optimizer/predicate_to_join_rule.h"
 #include "sql/optimizer/predicate_rewrite.h"
+#include "sql/optimizer/predicate_to_join_rule.h"
 
 Rewriter::Rewriter()
 {
   rewrite_rules_.emplace_back(new ExpressionRewriter);
   rewrite_rules_.emplace_back(new PredicateRewriteRule);
+  rewrite_rules_.emplace_back(new PredicateToJoinRewriter);
   rewrite_rules_.emplace_back(new PredicatePushdownRewriter);
-  // LAB3 TODO
-  /*
-    将 PredicateToJoinRewriter 添加到重写规则列表中
-  */
 }
 
 RC Rewriter::rewrite(unique_ptr<LogicalOperator> &oper, bool &change_made)

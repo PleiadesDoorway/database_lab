@@ -142,6 +142,8 @@ RC NestedLoopJoinPhysicalOperator::right_next()
 }
 
 RC NestedLoopJoinPhysicalOperator::filter(Tuple* tuple, bool& result) {
+  // 默认通过，当存在谓词时再逐条检查
+  result = true;
   if (join_predicate_.get() == nullptr) {
     return RC::SUCCESS;
   }

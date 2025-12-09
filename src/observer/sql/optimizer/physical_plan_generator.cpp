@@ -309,12 +309,87 @@ RC PhysicalPlanGenerator::create_plan(JoinLogicalOperator &join_oper, unique_ptr
     return RC::INTERNAL;
   }
   if (session->hash_join_on() && can_use_hash_join(join_oper)) {
-    // LAB3 TODO
-    /*
-      仿照 NestedLoopJoinPhysicalOperator 的创建方式，创建 HashJoinPhysicalOperator
-    */
+    // 使用 HashJoin
+    unique_ptr<HashJoinPhysicalOperator> hash_join_oper(new HashJoinPhysicalOperator());
+    
+    // 设置 join 条件
+    vector<unique_ptr<Expression>> join_predicates;
+    vector<unique_ptr<Expression>> &join_preds = join_oper.get_join_predicates();
+    
+    if (!join_preds.empty()) {
+      // 从 join_predicates_ 中获取
+      for (auto &pred : join_preds) {
+        if (pred->type() == ExprType::CONJUNCTION) {
+          // 如果是 ConjunctionExpr，提取其中的子表达式
+          ConjunctionExpr *conj = dynamic_cast<ConjunctionExpr *>(pred.get());
+          if (conj != nullptr) {
+            for (auto &child : conj->children()) {
+              join_predicates.push_back(child->copy());
+            }
+          }
+        } else {
+          join_predicates.push_back(pred->copy());
+        }
+      }
+    } else {
+      // 从 predicate_op_ 中获取所有表达式
+      LogicalOperator *pred_oper = join_oper.predicate_oper();
+      if (pred_oper != nullptr) {
+        for (auto &pred_expr : pred_oper->expressions()) {
+          join_predicates.push_back(pred_expr->copy());
+        }
+      }
+    }
+    
+    hash_join_oper->set_join_predicates(std::move(join_predicates));
+
+    // 创建左右子算子
+    for (auto &child_oper : child_opers) {
+      unique_ptr<PhysicalOperator> child_physical_oper;
+      rc = create(*child_oper, child_physical_oper, session);
+      if (rc != RC::SUCCESS) {
+        LOG_WARN("failed to create physical child oper. rc=%s", strrc(rc));
+        return rc;
+      }
+
+      hash_join_oper->add_child(std::move(child_physical_oper));
+    }
+
+    oper = std::move(hash_join_oper);
   } else {
-    auto join_physical_oper = new NestedLoopJoinPhysicalOperator();
+    unique_ptr<PhysicalOperator> join_physical_oper(new NestedLoopJoinPhysicalOperator());
+    // 构造 NLJ 的谓词（与 HashJoin 逻辑保持一致）
+    vector<unique_ptr<Expression>> join_predicates;
+    vector<unique_ptr<Expression>> &join_preds = join_oper.get_join_predicates();
+    if (!join_preds.empty()) {
+      for (auto &pred : join_preds) {
+        if (pred->type() == ExprType::CONJUNCTION) {
+          ConjunctionExpr *conj = dynamic_cast<ConjunctionExpr *>(pred.get());
+          if (conj != nullptr) {
+            for (auto &child : conj->children()) {
+              join_predicates.push_back(child->copy());
+            }
+          }
+        } else {
+          join_predicates.push_back(pred->copy());
+        }
+      }
+    } else {
+      LogicalOperator *pred_oper = join_oper.predicate_oper();
+      if (pred_oper != nullptr) {
+        for (auto &pred_expr : pred_oper->expressions()) {
+          join_predicates.push_back(pred_expr->copy());
+        }
+      }
+    }
+
+    // 将谓词包装为 ConjunctionExpr 并传递给 NLJ
+    if (!join_predicates.empty()) {
+      auto conj_expr = make_unique<ConjunctionExpr>(ConjunctionExpr::Type::AND, join_predicates);
+      static_cast<NestedLoopJoinPhysicalOperator *>(join_physical_oper.get())
+          ->set_predicate(std::move(conj_expr));
+    }
+
     for (auto &child_oper : child_opers) {
       unique_ptr<PhysicalOperator> child_physical_oper;
       rc = create(*child_oper, child_physical_oper, session);
@@ -325,22 +400,60 @@ RC PhysicalPlanGenerator::create_plan(JoinLogicalOperator &join_oper, unique_ptr
 
       join_physical_oper->add_child(std::move(child_physical_oper));
     }
-    auto& predicates = join_oper.get_join_predicates();
-    if (!predicates.empty()) {
-      join_physical_oper->set_predicate(std::move(predicates[0]));
-    }
-    oper.reset(join_physical_oper);
+
+    oper = std::move(join_physical_oper);
   }
   return rc;
 }
 
 bool PhysicalPlanGenerator::can_use_hash_join(JoinLogicalOperator &join_oper)
 {
-  // LAB3 TODO
-  /*
-    HashJoin 只能处理等值连接，本函数的任务是判断 JoinLogicalOperator 上的所有连接谓词都是等值比较
-    提示：可以使用 JoinLogicalOperator 上的 get_join_predicates() 方法获取连接谓词列表
-  */
+  auto has_field_eq = [](Expression *expr, auto &&self_ref) -> bool {
+    if (expr == nullptr) {
+      return false;
+    }
+    if (expr->type() == ExprType::CONJUNCTION) {
+      auto *conj = dynamic_cast<ConjunctionExpr *>(expr);
+      if (conj == nullptr) {
+        return false;
+      }
+      for (auto &child : conj->children()) {
+        if (self_ref(child.get(), self_ref)) {
+          return true;
+        }
+      }
+      return false;
+    }
+    if (expr->type() != ExprType::COMPARISON) {
+      return false;
+    }
+    auto *cmp = dynamic_cast<ComparisonExpr *>(expr);
+    if (cmp == nullptr) {
+      return false;
+    }
+    return cmp->comp() == CompOp::EQUAL_TO &&
+           cmp->left()->type() == ExprType::FIELD &&
+           cmp->right()->type() == ExprType::FIELD;
+  };
+
+  // 优先检查 join_predicates（已下推的等值条件）
+  for (auto &pred : join_oper.get_join_predicates()) {
+    if (has_field_eq(pred.get(), has_field_eq)) {
+      return true;
+    }
+  }
+
+  // 兜底检查 predicate_oper 中的表达式
+  LogicalOperator *pred_oper = join_oper.predicate_oper();
+  if (pred_oper != nullptr) {
+    for (auto &pred : pred_oper->expressions()) {
+      if (has_field_eq(pred.get(), has_field_eq)) {
+        return true;
+      }
+    }
+  }
+
+  return false;
 }
 
 RC PhysicalPlanGenerator::create_plan(CalcLogicalOperator &logical_oper, unique_ptr<PhysicalOperator> &oper, Session* session)
@@ -354,6 +467,13 @@ RC PhysicalPlanGenerator::create_plan(CalcLogicalOperator &logical_oper, unique_
 
 RC PhysicalPlanGenerator::create_plan(GroupByLogicalOperator &logical_oper, unique_ptr<PhysicalOperator> &oper, Session* session)
 {
+  // Lab2 TODO: 支持带 HAVING 的 GROUP BY 聚合
+  //
+  // 目标：确保 HAVING 子句中的所有表达式信息被正确传递到物理算子中。
+  // 实现要点：
+  // 1. 从 GroupByLogicalOperator算子中提取 HAVING 表达式；
+  // 2. 将 HAVING 表达式（以及其中的聚合信息）绑定到 GroupByPhysicalOperator，
+  //    以便后续物理算子能够在聚合结果计算完成后执行 HAVING 过滤。
 
   RC rc = RC::SUCCESS;
 

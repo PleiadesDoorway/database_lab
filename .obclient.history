@@ -1,0 +1,1444 @@
+### 2025-12-05 23:42:32.001
+insert into t1 values(1, 10);
+### 2025-12-05 23:43:57.880
+explain select * from t1 inner join t2 on t1.id=t2.id inner join t3 on t1.id=t3.id;
+### 2025-12-05 23:45:05.010
+INSERT INTO t1 VALUES (2, 'b');
+### 2025-12-05 23:45:05.010
+INSERT INTO t1 VALUES (3, 'c');
+### 2025-12-05 23:45:05.011
+INSERT INTO t2 VALUES (2, 15);
+### 2025-12-05 23:45:05.011
+INSERT INTO t3 VALUES (3, 800);
+### 2025-12-05 23:45:05.012
+explain Select * from t1 inner join t2 on t1.id=t2.id inner join t3 on t1.id=t3.id;
+### 2025-12-05 23:45:18.143
+CREATE TABLE t1(id int);
+### 2025-12-05 23:45:18.151
+CREATE TABLE t2(id int);
+### 2025-12-05 23:45:18.158
+CREATE TABLE t3(id int);
+### 2025-12-05 23:45:18.164
+INSERT INTO t1 VALUES (1);
+### 2025-12-05 23:45:18.164
+INSERT INTO t1 VALUES (2);
+### 2025-12-05 23:45:18.165
+INSERT INTO t2 VALUES (1);
+### 2025-12-05 23:45:18.165
+INSERT INTO t2 VALUES (2);
+### 2025-12-05 23:45:18.165
+INSERT INTO t3 VALUES (1);
+### 2025-12-05 23:45:18.165
+INSERT INTO t3 VALUES (2);
+### 2025-12-05 23:45:18.166
+INSERT INTO t3 VALUES (3);
+### 2025-12-05 23:45:18.166
+explain Select * from t1 inner join t2 on t1.id=t2.id inner join t3 on t1.id<t3.id;
+### 2025-12-05 23:45:46.435
+create table t6(id int);
+### 2025-12-05 23:45:46.444
+insert into t5 values(2);
+### 2025-12-05 23:45:46.444
+insert into t6 values(2);
+### 2025-12-05 23:45:46.444
+explain select * from t1 inner join t2 on t1.id=t2.id inner join t3 on t1.id=t3.id inner join t4 on t3.id=t4.id inner join t5 on t4.id<t5.id inner join t6 on t5.id=t6.id;
+### 2025-12-05 23:48:07.788
+explain select * from join_table_large_1 inner join join_table_large_2 on join_table_large_1.id=join_table_large_2.id inner join join_table_large_3 on join_table_large_1.id=join_table_large_3.id inner join join_table_large_4 on join_table_large_3.id=join_table_large_4.id inner join join_table_large_5 on join_table_large_4.id<join_table_large_5.id inner join join_table_large_6 on join_table_large_5.id=join_table_large_6.id where join_table_large_3.num3 <10 and join_table_large_5.num5>90;
+### 2025-12-05 23:58:39.581
+CREATE TABLE t1(id int, name char);
+### 2025-12-05 23:58:39.589
+CREATE TABLE t2(id int, num int);
+### 2025-12-05 23:58:39.627
+CREATE TABLE t3(id int, num2 int);
+### 2025-12-05 23:58:39.678
+INSERT INTO t1 VALUES (1, 'a');
+### 2025-12-05 23:58:39.679
+INSERT INTO t2 VALUES (1, 2);
+### 2025-12-05 23:58:39.679
+INSERT INTO t3 VALUES (1, 120);
+### 2025-12-05 23:58:39.680
+explain select * from t1, t2, t3 where t1.id = t2.id and t2.id>t3.id and t2.id=1;
+### 2025-12-05 23:58:39.681
+select * from t1, t2, t3 where t1.id = t2.id and t2.id>t3.id and t2.id=1;
+### 2025-12-06 00:17:24.473
+explain select * from join_table_1 inner join join_table_2 on join_table_1.id = join_table_2.id;
+### 2025-12-06 00:18:34.849
+-- echo initialization
+### 2025-12-06 00:18:34.858
+CREATE TABLE join_table_3(id int, num2 int);
+### 2025-12-06 00:18:34.866
+create table join_table_empty_1(id int, num_empty_1 int);
+### 2025-12-06 00:18:34.873
+INSERT INTO join_table_1 VALUES (3, 'c');
+### 2025-12-06 00:18:34.874
+INSERT INTO join_table_3 VALUES (1, 120);
+### 2025-12-06 00:18:34.874
+INSERT INTO join_table_3 VALUES (3, 800);
+### 2025-12-06 00:18:34.875
+-- echo hash join
+### 2025-12-06 00:18:34.875
+-- ensure:hashjoin select * from join_table_1 inner join join_table_2 on join_table_1.id = join_table_2.id;
+### 2025-12-06 00:18:34.875
+-- sort select * from join_table_1 inner join join_table_2 on join_table_1.id = join_table_2.id;
+### 2025-12-06 00:18:34.875
+-- ensure:hashjoin*2 Select * from join_table_1 inner join join_table_2 on join_table_1.id=join_table_2.id inner join join_table_3 on join_table_1.id=join_table_3.id;
+### 2025-12-06 00:18:34.875
+-- sort Select * from join_table_1 inner join join_table_2 on join_table_1.id=join_table_2.id inner join join_table_3 on join_table_1.id=join_table_3.id;
+### 2025-12-06 00:18:34.875
+-- ensure:hashjoin Select * from join_table_1 inner join join_table_2 on join_table_1.id=join_table_2.id inner join join_table_3 on join_table_1.id<join_table_3.id;
+### 2025-12-06 00:18:34.876
+-- ensure:nlj Select * from join_table_1 inner join join_table_2 on join_table_1.id=join_table_2.id inner join join_table_3 on join_table_1.id<join_table_3.id;
+### 2025-12-06 00:18:34.876
+-- sort Select * from join_table_1 inner join join_table_2 on join_table_1.id=join_table_2.id inner join join_table_3 on join_table_1.id<join_table_3.id;
+### 2025-12-06 00:18:34.876
+-- ensure:nlj Select * from join_table_1 inner join join_table_2 on join_table_2.num>13 where join_table_1.name='b';
+### 2025-12-06 00:18:34.876
+-- sort Select * from join_table_1 inner join join_table_2 on join_table_2.num>13 where join_table_1.name='b';
+### 2025-12-06 00:18:34.876
+-- ensure:nlj Select * from join_table_1 inner join join_table_2 on join_table_2.num>13 where join_table_1.name='a';
+### 2025-12-06 00:18:34.876
+-- sort Select * from join_table_1 inner join join_table_2 on join_table_2.num>13 where join_table_1.name='a';
+### 2025-12-06 00:18:34.876
+-- ensure:nlj Select * from join_table_1 inner join join_table_2 on join_table_2.num>23 where join_table_1.name='b';
+### 2025-12-06 00:18:34.876
+-- sort Select * from join_table_1 inner join join_table_2 on join_table_2.num>23 where join_table_1.name='b';
+### 2025-12-06 00:18:34.876
+-- ensure:hashjoin select * from join_table_1 inner join join_table_empty_1 on join_table_1.id=join_table_empty_1.id;
+### 2025-12-06 00:18:34.877
+select * from join_table_1 inner join join_table_empty_1 on join_table_1.id=join_table_empty_1.id;
+### 2025-12-06 00:18:34.878
+-- ensure:hashjoin select * from join_table_empty_1 inner join join_table_1 on join_table_empty_1.id=join_table_1.id;
+### 2025-12-06 00:18:34.878
+select * from join_table_empty_1 inner join join_table_1 on join_table_empty_1.id=join_table_1.id;
+### 2025-12-06 00:18:34.878
+-- echo 4. very large join
+### 2025-12-06 00:18:34.879
+create table join_table_large_1(id int, num1 int);
+### 2025-12-06 00:18:34.885
+create table join_table_large_2(id int, num2 int);
+### 2025-12-06 00:18:34.891
+create table join_table_large_3(id int, num3 int);
+### 2025-12-06 00:18:34.897
+create table join_table_large_4(id int, num4 int);
+### 2025-12-06 00:18:34.903
+create table join_table_large_5(id int, num5 int);
+### 2025-12-06 00:18:34.909
+create table join_table_large_6(id int, num6 int);
+### 2025-12-06 00:18:34.916
+insert into join_table_large_1 values(1, 1);
+### 2025-12-06 00:18:34.916
+insert into join_table_large_1 values(2, 2);
+### 2025-12-06 00:18:34.917
+insert into join_table_large_1 values(3, 3);
+### 2025-12-06 00:18:34.917
+insert into join_table_large_1 values(4, 4);
+### 2025-12-06 00:18:34.917
+insert into join_table_large_1 values(5, 5);
+### 2025-12-06 00:18:34.917
+insert into join_table_large_1 values(6, 6);
+### 2025-12-06 00:18:34.917
+insert into join_table_large_1 values(7, 7);
+### 2025-12-06 00:18:34.918
+insert into join_table_large_1 values(8, 8);
+### 2025-12-06 00:18:34.918
+insert into join_table_large_1 values(9, 9);
+### 2025-12-06 00:18:34.918
+insert into join_table_large_1 values(10, 10);
+### 2025-12-06 00:18:34.918
+insert into join_table_large_1 values(11, 11);
+### 2025-12-06 00:18:34.918
+insert into join_table_large_1 values(12, 12);
+### 2025-12-06 00:18:34.919
+insert into join_table_large_1 values(13, 13);
+### 2025-12-06 00:18:34.919
+insert into join_table_large_1 values(14, 14);
+### 2025-12-06 00:18:34.919
+insert into join_table_large_1 values(15, 15);
+### 2025-12-06 00:18:34.919
+insert into join_table_large_1 values(16, 16);
+### 2025-12-06 00:18:34.920
+insert into join_table_large_1 values(17, 17);
+### 2025-12-06 00:18:34.920
+insert into join_table_large_1 values(18, 18);
+### 2025-12-06 00:18:34.920
+insert into join_table_large_1 values(19, 19);
+### 2025-12-06 00:18:34.920
+insert into join_table_large_1 values(20, 20);
+### 2025-12-06 00:18:34.920
+insert into join_table_large_1 values(21, 21);
+### 2025-12-06 00:18:34.921
+insert into join_table_large_1 values(22, 22);
+### 2025-12-06 00:18:34.921
+insert into join_table_large_1 values(23, 23);
+### 2025-12-06 00:18:34.921
+insert into join_table_large_1 values(24, 24);
+### 2025-12-06 00:18:34.921
+insert into join_table_large_1 values(25, 25);
+### 2025-12-06 00:18:34.922
+insert into join_table_large_1 values(26, 26);
+### 2025-12-06 00:18:34.922
+insert into join_table_large_1 values(27, 27);
+### 2025-12-06 00:18:34.922
+insert into join_table_large_1 values(28, 28);
+### 2025-12-06 00:18:34.922
+insert into join_table_large_1 values(29, 29);
+### 2025-12-06 00:18:34.922
+insert into join_table_large_1 values(30, 30);
+### 2025-12-06 00:18:34.923
+insert into join_table_large_1 values(31, 31);
+### 2025-12-06 00:18:34.923
+insert into join_table_large_1 values(32, 32);
+### 2025-12-06 00:18:34.923
+insert into join_table_large_1 values(33, 33);
+### 2025-12-06 00:18:34.923
+insert into join_table_large_1 values(34, 34);
+### 2025-12-06 00:18:34.924
+insert into join_table_large_1 values(35, 35);
+### 2025-12-06 00:18:34.924
+insert into join_table_large_1 values(36, 36);
+### 2025-12-06 00:18:34.924
+insert into join_table_large_1 values(37, 37);
+### 2025-12-06 00:18:34.925
+insert into join_table_large_1 values(38, 38);
+### 2025-12-06 00:18:34.925
+insert into join_table_large_1 values(39, 39);
+### 2025-12-06 00:18:34.925
+insert into join_table_large_1 values(40, 40);
+### 2025-12-06 00:18:34.925
+insert into join_table_large_1 values(41, 41);
+### 2025-12-06 00:18:34.926
+insert into join_table_large_1 values(42, 42);
+### 2025-12-06 00:18:34.926
+insert into join_table_large_1 values(43, 43);
+### 2025-12-06 00:18:34.926
+insert into join_table_large_1 values(44, 44);
+### 2025-12-06 00:18:34.926
+insert into join_table_large_1 values(45, 45);
+### 2025-12-06 00:18:34.927
+insert into join_table_large_1 values(46, 46);
+### 2025-12-06 00:18:34.927
+insert into join_table_large_1 values(47, 47);
+### 2025-12-06 00:18:34.927
+insert into join_table_large_1 values(48, 48);
+### 2025-12-06 00:18:34.927
+insert into join_table_large_1 values(49, 49);
+### 2025-12-06 00:18:34.927
+insert into join_table_large_1 values(50, 50);
+### 2025-12-06 00:18:34.928
+insert into join_table_large_1 values(51, 51);
+### 2025-12-06 00:18:34.928
+insert into join_table_large_1 values(52, 52);
+### 2025-12-06 00:18:34.928
+insert into join_table_large_1 values(53, 53);
+### 2025-12-06 00:18:34.928
+insert into join_table_large_1 values(54, 54);
+### 2025-12-06 00:18:34.929
+insert into join_table_large_1 values(55, 55);
+### 2025-12-06 00:18:34.929
+insert into join_table_large_1 values(56, 56);
+### 2025-12-06 00:18:34.929
+insert into join_table_large_1 values(57, 57);
+### 2025-12-06 00:18:34.929
+insert into join_table_large_1 values(58, 58);
+### 2025-12-06 00:18:34.930
+insert into join_table_large_1 values(59, 59);
+### 2025-12-06 00:18:34.930
+insert into join_table_large_1 values(60, 60);
+### 2025-12-06 00:18:34.930
+insert into join_table_large_1 values(61, 61);
+### 2025-12-06 00:18:34.930
+insert into join_table_large_1 values(62, 62);
+### 2025-12-06 00:18:34.930
+insert into join_table_large_1 values(63, 63);
+### 2025-12-06 00:18:34.930
+insert into join_table_large_1 values(64, 64);
+### 2025-12-06 00:18:34.931
+insert into join_table_large_1 values(65, 65);
+### 2025-12-06 00:18:34.931
+insert into join_table_large_1 values(66, 66);
+### 2025-12-06 00:18:34.931
+insert into join_table_large_1 values(67, 67);
+### 2025-12-06 00:18:34.932
+insert into join_table_large_1 values(68, 68);
+### 2025-12-06 00:18:34.932
+insert into join_table_large_1 values(69, 69);
+### 2025-12-06 00:18:34.932
+insert into join_table_large_1 values(70, 70);
+### 2025-12-06 00:18:34.932
+insert into join_table_large_1 values(71, 71);
+### 2025-12-06 00:18:34.932
+insert into join_table_large_1 values(72, 72);
+### 2025-12-06 00:18:34.933
+insert into join_table_large_1 values(73, 73);
+### 2025-12-06 00:18:34.933
+insert into join_table_large_1 values(74, 74);
+### 2025-12-06 00:18:34.933
+insert into join_table_large_1 values(75, 75);
+### 2025-12-06 00:18:34.933
+insert into join_table_large_1 values(76, 76);
+### 2025-12-06 00:18:34.933
+insert into join_table_large_1 values(77, 77);
+### 2025-12-06 00:18:34.933
+insert into join_table_large_1 values(78, 78);
+### 2025-12-06 00:18:34.934
+insert into join_table_large_1 values(79, 79);
+### 2025-12-06 00:18:34.934
+insert into join_table_large_1 values(80, 80);
+### 2025-12-06 00:18:34.934
+insert into join_table_large_1 values(81, 81);
+### 2025-12-06 00:18:34.934
+insert into join_table_large_1 values(82, 82);
+### 2025-12-06 00:18:34.934
+insert into join_table_large_1 values(83, 83);
+### 2025-12-06 00:18:34.935
+insert into join_table_large_1 values(84, 84);
+### 2025-12-06 00:18:34.935
+insert into join_table_large_1 values(85, 85);
+### 2025-12-06 00:18:34.935
+insert into join_table_large_1 values(86, 86);
+### 2025-12-06 00:18:34.935
+insert into join_table_large_1 values(87, 87);
+### 2025-12-06 00:18:34.935
+insert into join_table_large_1 values(88, 88);
+### 2025-12-06 00:18:34.935
+insert into join_table_large_1 values(89, 89);
+### 2025-12-06 00:18:34.936
+insert into join_table_large_1 values(90, 90);
+### 2025-12-06 00:18:34.936
+insert into join_table_large_1 values(91, 91);
+### 2025-12-06 00:18:34.936
+insert into join_table_large_1 values(92, 92);
+### 2025-12-06 00:18:34.936
+insert into join_table_large_1 values(93, 93);
+### 2025-12-06 00:18:34.937
+insert into join_table_large_1 values(94, 94);
+### 2025-12-06 00:18:34.937
+insert into join_table_large_1 values(95, 95);
+### 2025-12-06 00:18:34.937
+insert into join_table_large_1 values(96, 96);
+### 2025-12-06 00:18:34.937
+insert into join_table_large_1 values(97, 97);
+### 2025-12-06 00:18:34.937
+insert into join_table_large_1 values(98, 98);
+### 2025-12-06 00:18:34.937
+insert into join_table_large_1 values(99, 99);
+### 2025-12-06 00:18:34.938
+insert into join_table_large_1 values(100, 100);
+### 2025-12-06 00:18:34.938
+insert into join_table_large_2 values(1, 1);
+### 2025-12-06 00:18:34.938
+insert into join_table_large_2 values(2, 2);
+### 2025-12-06 00:18:34.938
+insert into join_table_large_2 values(3, 3);
+### 2025-12-06 00:18:34.938
+insert into join_table_large_2 values(4, 4);
+### 2025-12-06 00:18:34.939
+insert into join_table_large_2 values(5, 5);
+### 2025-12-06 00:18:34.939
+insert into join_table_large_2 values(6, 6);
+### 2025-12-06 00:18:34.939
+insert into join_table_large_2 values(7, 7);
+### 2025-12-06 00:18:34.939
+insert into join_table_large_2 values(8, 8);
+### 2025-12-06 00:18:34.939
+insert into join_table_large_2 values(9, 9);
+### 2025-12-06 00:18:34.940
+insert into join_table_large_2 values(10, 10);
+### 2025-12-06 00:18:34.941
+insert into join_table_large_2 values(11, 11);
+### 2025-12-06 00:18:34.941
+insert into join_table_large_2 values(12, 12);
+### 2025-12-06 00:18:34.942
+insert into join_table_large_2 values(13, 13);
+### 2025-12-06 00:18:34.942
+insert into join_table_large_2 values(14, 14);
+### 2025-12-06 00:18:34.942
+insert into join_table_large_2 values(15, 15);
+### 2025-12-06 00:18:34.942
+insert into join_table_large_2 values(16, 16);
+### 2025-12-06 00:18:34.943
+insert into join_table_large_2 values(17, 17);
+### 2025-12-06 00:18:34.943
+insert into join_table_large_2 values(18, 18);
+### 2025-12-06 00:18:34.943
+insert into join_table_large_2 values(19, 19);
+### 2025-12-06 00:18:34.944
+insert into join_table_large_2 values(20, 20);
+### 2025-12-06 00:18:34.945
+insert into join_table_large_2 values(21, 21);
+### 2025-12-06 00:18:34.945
+insert into join_table_large_2 values(22, 22);
+### 2025-12-06 00:18:34.946
+insert into join_table_large_2 values(23, 23);
+### 2025-12-06 00:18:34.946
+insert into join_table_large_2 values(24, 24);
+### 2025-12-06 00:18:34.946
+insert into join_table_large_2 values(25, 25);
+### 2025-12-06 00:18:34.947
+insert into join_table_large_2 values(26, 26);
+### 2025-12-06 00:18:34.947
+insert into join_table_large_2 values(27, 27);
+### 2025-12-06 00:18:34.947
+insert into join_table_large_2 values(28, 28);
+### 2025-12-06 00:18:34.947
+insert into join_table_large_2 values(29, 29);
+### 2025-12-06 00:18:34.948
+insert into join_table_large_2 values(30, 30);
+### 2025-12-06 00:18:34.948
+insert into join_table_large_2 values(31, 31);
+### 2025-12-06 00:18:34.949
+insert into join_table_large_2 values(32, 32);
+### 2025-12-06 00:18:34.949
+insert into join_table_large_2 values(33, 33);
+### 2025-12-06 00:18:34.950
+insert into join_table_large_2 values(34, 34);
+### 2025-12-06 00:18:34.950
+insert into join_table_large_2 values(35, 35);
+### 2025-12-06 00:18:34.950
+insert into join_table_large_2 values(36, 36);
+### 2025-12-06 00:18:34.950
+insert into join_table_large_2 values(37, 37);
+### 2025-12-06 00:18:34.951
+insert into join_table_large_2 values(38, 38);
+### 2025-12-06 00:18:34.951
+insert into join_table_large_2 values(39, 39);
+### 2025-12-06 00:18:34.951
+insert into join_table_large_2 values(40, 40);
+### 2025-12-06 00:18:34.952
+insert into join_table_large_2 values(41, 41);
+### 2025-12-06 00:18:34.952
+insert into join_table_large_2 values(42, 42);
+### 2025-12-06 00:18:34.952
+insert into join_table_large_2 values(43, 43);
+### 2025-12-06 00:18:34.953
+insert into join_table_large_2 values(44, 44);
+### 2025-12-06 00:18:34.953
+insert into join_table_large_2 values(45, 45);
+### 2025-12-06 00:18:34.953
+insert into join_table_large_2 values(46, 46);
+### 2025-12-06 00:18:34.954
+insert into join_table_large_2 values(47, 47);
+### 2025-12-06 00:18:34.954
+insert into join_table_large_2 values(48, 48);
+### 2025-12-06 00:18:34.954
+insert into join_table_large_2 values(49, 49);
+### 2025-12-06 00:18:34.955
+insert into join_table_large_2 values(50, 50);
+### 2025-12-06 00:18:34.955
+insert into join_table_large_2 values(51, 51);
+### 2025-12-06 00:18:34.955
+insert into join_table_large_2 values(52, 52);
+### 2025-12-06 00:18:34.955
+insert into join_table_large_2 values(53, 53);
+### 2025-12-06 00:18:34.956
+insert into join_table_large_2 values(54, 54);
+### 2025-12-06 00:18:34.956
+insert into join_table_large_2 values(55, 55);
+### 2025-12-06 00:18:34.956
+insert into join_table_large_2 values(56, 56);
+### 2025-12-06 00:18:34.957
+insert into join_table_large_2 values(57, 57);
+### 2025-12-06 00:18:34.957
+insert into join_table_large_2 values(58, 58);
+### 2025-12-06 00:18:34.957
+insert into join_table_large_2 values(59, 59);
+### 2025-12-06 00:18:34.958
+insert into join_table_large_2 values(60, 60);
+### 2025-12-06 00:18:34.958
+insert into join_table_large_2 values(61, 61);
+### 2025-12-06 00:18:34.959
+insert into join_table_large_2 values(62, 62);
+### 2025-12-06 00:18:34.959
+insert into join_table_large_2 values(63, 63);
+### 2025-12-06 00:18:34.959
+insert into join_table_large_2 values(64, 64);
+### 2025-12-06 00:18:34.959
+insert into join_table_large_2 values(65, 65);
+### 2025-12-06 00:18:34.960
+insert into join_table_large_2 values(66, 66);
+### 2025-12-06 00:18:34.960
+insert into join_table_large_2 values(67, 67);
+### 2025-12-06 00:18:34.961
+insert into join_table_large_2 values(68, 68);
+### 2025-12-06 00:18:34.961
+insert into join_table_large_2 values(69, 69);
+### 2025-12-06 00:18:34.961
+insert into join_table_large_2 values(70, 70);
+### 2025-12-06 00:18:34.962
+insert into join_table_large_2 values(71, 71);
+### 2025-12-06 00:18:34.962
+insert into join_table_large_2 values(72, 72);
+### 2025-12-06 00:18:34.962
+insert into join_table_large_2 values(73, 73);
+### 2025-12-06 00:18:34.963
+insert into join_table_large_2 values(74, 74);
+### 2025-12-06 00:18:34.963
+insert into join_table_large_2 values(75, 75);
+### 2025-12-06 00:18:34.964
+insert into join_table_large_2 values(76, 76);
+### 2025-12-06 00:18:34.964
+insert into join_table_large_2 values(77, 77);
+### 2025-12-06 00:18:34.964
+insert into join_table_large_2 values(78, 78);
+### 2025-12-06 00:18:34.964
+insert into join_table_large_2 values(79, 79);
+### 2025-12-06 00:18:34.965
+insert into join_table_large_2 values(80, 80);
+### 2025-12-06 00:18:34.965
+insert into join_table_large_2 values(81, 81);
+### 2025-12-06 00:18:34.965
+insert into join_table_large_2 values(82, 82);
+### 2025-12-06 00:18:34.965
+insert into join_table_large_2 values(83, 83);
+### 2025-12-06 00:18:34.966
+insert into join_table_large_2 values(84, 84);
+### 2025-12-06 00:18:34.966
+insert into join_table_large_2 values(85, 85);
+### 2025-12-06 00:18:34.966
+insert into join_table_large_2 values(86, 86);
+### 2025-12-06 00:18:34.966
+insert into join_table_large_2 values(87, 87);
+### 2025-12-06 00:18:34.966
+insert into join_table_large_2 values(88, 88);
+### 2025-12-06 00:18:34.967
+insert into join_table_large_2 values(89, 89);
+### 2025-12-06 00:18:34.967
+insert into join_table_large_2 values(90, 90);
+### 2025-12-06 00:18:34.967
+insert into join_table_large_2 values(91, 91);
+### 2025-12-06 00:18:34.967
+insert into join_table_large_2 values(92, 92);
+### 2025-12-06 00:18:34.967
+insert into join_table_large_2 values(93, 93);
+### 2025-12-06 00:18:34.968
+insert into join_table_large_2 values(94, 94);
+### 2025-12-06 00:18:34.968
+insert into join_table_large_2 values(95, 95);
+### 2025-12-06 00:18:34.968
+insert into join_table_large_2 values(96, 96);
+### 2025-12-06 00:18:34.969
+insert into join_table_large_2 values(97, 97);
+### 2025-12-06 00:18:34.969
+insert into join_table_large_2 values(98, 98);
+### 2025-12-06 00:18:34.969
+insert into join_table_large_2 values(99, 99);
+### 2025-12-06 00:18:34.970
+insert into join_table_large_2 values(100, 100);
+### 2025-12-06 00:18:34.970
+insert into join_table_large_3 values(1, 1);
+### 2025-12-06 00:18:34.971
+insert into join_table_large_3 values(2, 2);
+### 2025-12-06 00:18:34.971
+insert into join_table_large_3 values(3, 3);
+### 2025-12-06 00:18:34.971
+insert into join_table_large_3 values(4, 4);
+### 2025-12-06 00:18:34.971
+insert into join_table_large_3 values(5, 5);
+### 2025-12-06 00:18:34.971
+insert into join_table_large_3 values(6, 6);
+### 2025-12-06 00:18:34.972
+insert into join_table_large_3 values(7, 7);
+### 2025-12-06 00:18:34.972
+insert into join_table_large_3 values(8, 8);
+### 2025-12-06 00:18:34.972
+insert into join_table_large_3 values(9, 9);
+### 2025-12-06 00:18:34.973
+insert into join_table_large_3 values(10, 10);
+### 2025-12-06 00:18:34.973
+insert into join_table_large_3 values(11, 11);
+### 2025-12-06 00:18:34.974
+insert into join_table_large_3 values(12, 12);
+### 2025-12-06 00:18:34.974
+insert into join_table_large_3 values(13, 13);
+### 2025-12-06 00:18:34.974
+insert into join_table_large_3 values(14, 14);
+### 2025-12-06 00:18:34.975
+insert into join_table_large_3 values(15, 15);
+### 2025-12-06 00:18:34.975
+insert into join_table_large_3 values(16, 16);
+### 2025-12-06 00:18:34.975
+insert into join_table_large_3 values(17, 17);
+### 2025-12-06 00:18:34.975
+insert into join_table_large_3 values(18, 18);
+### 2025-12-06 00:18:34.976
+insert into join_table_large_3 values(19, 19);
+### 2025-12-06 00:18:34.976
+insert into join_table_large_3 values(20, 20);
+### 2025-12-06 00:18:34.976
+insert into join_table_large_3 values(21, 21);
+### 2025-12-06 00:18:34.976
+insert into join_table_large_3 values(22, 22);
+### 2025-12-06 00:18:34.976
+insert into join_table_large_3 values(23, 23);
+### 2025-12-06 00:18:34.977
+insert into join_table_large_3 values(24, 24);
+### 2025-12-06 00:18:34.977
+insert into join_table_large_3 values(25, 25);
+### 2025-12-06 00:18:34.977
+insert into join_table_large_3 values(26, 26);
+### 2025-12-06 00:18:34.977
+insert into join_table_large_3 values(27, 27);
+### 2025-12-06 00:18:34.977
+insert into join_table_large_3 values(28, 28);
+### 2025-12-06 00:18:34.977
+insert into join_table_large_3 values(29, 29);
+### 2025-12-06 00:18:34.978
+insert into join_table_large_3 values(30, 30);
+### 2025-12-06 00:18:34.978
+insert into join_table_large_3 values(31, 31);
+### 2025-12-06 00:18:34.978
+insert into join_table_large_3 values(32, 32);
+### 2025-12-06 00:18:34.978
+insert into join_table_large_3 values(33, 33);
+### 2025-12-06 00:18:34.978
+insert into join_table_large_3 values(34, 34);
+### 2025-12-06 00:18:34.979
+insert into join_table_large_3 values(35, 35);
+### 2025-12-06 00:18:34.979
+insert into join_table_large_3 values(36, 36);
+### 2025-12-06 00:18:34.979
+insert into join_table_large_3 values(37, 37);
+### 2025-12-06 00:18:34.979
+insert into join_table_large_3 values(38, 38);
+### 2025-12-06 00:18:34.979
+insert into join_table_large_3 values(39, 39);
+### 2025-12-06 00:18:34.979
+insert into join_table_large_3 values(40, 40);
+### 2025-12-06 00:18:34.980
+insert into join_table_large_3 values(41, 41);
+### 2025-12-06 00:18:34.980
+insert into join_table_large_3 values(42, 42);
+### 2025-12-06 00:18:34.980
+insert into join_table_large_3 values(43, 43);
+### 2025-12-06 00:18:34.980
+insert into join_table_large_3 values(44, 44);
+### 2025-12-06 00:18:34.980
+insert into join_table_large_3 values(45, 45);
+### 2025-12-06 00:18:34.980
+insert into join_table_large_3 values(46, 46);
+### 2025-12-06 00:18:34.981
+insert into join_table_large_3 values(47, 47);
+### 2025-12-06 00:18:34.981
+insert into join_table_large_3 values(48, 48);
+### 2025-12-06 00:18:34.981
+insert into join_table_large_3 values(49, 49);
+### 2025-12-06 00:18:34.981
+insert into join_table_large_3 values(50, 50);
+### 2025-12-06 00:18:34.981
+insert into join_table_large_3 values(51, 51);
+### 2025-12-06 00:18:34.982
+insert into join_table_large_3 values(52, 52);
+### 2025-12-06 00:18:34.982
+insert into join_table_large_3 values(53, 53);
+### 2025-12-06 00:18:34.982
+insert into join_table_large_3 values(54, 54);
+### 2025-12-06 00:18:34.982
+insert into join_table_large_3 values(55, 55);
+### 2025-12-06 00:18:34.982
+insert into join_table_large_3 values(56, 56);
+### 2025-12-06 00:18:34.982
+insert into join_table_large_3 values(57, 57);
+### 2025-12-06 00:18:34.983
+insert into join_table_large_3 values(58, 58);
+### 2025-12-06 00:18:34.983
+insert into join_table_large_3 values(59, 59);
+### 2025-12-06 00:18:34.983
+insert into join_table_large_3 values(60, 60);
+### 2025-12-06 00:18:34.983
+insert into join_table_large_3 values(61, 61);
+### 2025-12-06 00:18:34.983
+insert into join_table_large_3 values(62, 62);
+### 2025-12-06 00:18:34.983
+insert into join_table_large_3 values(63, 63);
+### 2025-12-06 00:18:34.984
+insert into join_table_large_3 values(64, 64);
+### 2025-12-06 00:18:34.984
+insert into join_table_large_3 values(65, 65);
+### 2025-12-06 00:18:34.984
+insert into join_table_large_3 values(66, 66);
+### 2025-12-06 00:18:34.984
+insert into join_table_large_3 values(67, 67);
+### 2025-12-06 00:18:34.984
+insert into join_table_large_3 values(68, 68);
+### 2025-12-06 00:18:34.984
+insert into join_table_large_3 values(69, 69);
+### 2025-12-06 00:18:34.985
+insert into join_table_large_3 values(70, 70);
+### 2025-12-06 00:18:34.985
+insert into join_table_large_3 values(71, 71);
+### 2025-12-06 00:18:34.985
+insert into join_table_large_3 values(72, 72);
+### 2025-12-06 00:18:34.985
+insert into join_table_large_3 values(73, 73);
+### 2025-12-06 00:18:34.985
+insert into join_table_large_3 values(74, 74);
+### 2025-12-06 00:18:34.986
+insert into join_table_large_3 values(75, 75);
+### 2025-12-06 00:18:34.986
+insert into join_table_large_3 values(76, 76);
+### 2025-12-06 00:18:34.986
+insert into join_table_large_3 values(77, 77);
+### 2025-12-06 00:18:34.987
+insert into join_table_large_3 values(78, 78);
+### 2025-12-06 00:18:34.987
+insert into join_table_large_3 values(79, 79);
+### 2025-12-06 00:18:34.987
+insert into join_table_large_3 values(80, 80);
+### 2025-12-06 00:18:34.988
+insert into join_table_large_3 values(81, 81);
+### 2025-12-06 00:18:34.988
+insert into join_table_large_3 values(82, 82);
+### 2025-12-06 00:18:34.988
+insert into join_table_large_3 values(83, 83);
+### 2025-12-06 00:18:34.989
+insert into join_table_large_3 values(84, 84);
+### 2025-12-06 00:18:34.989
+insert into join_table_large_3 values(85, 85);
+### 2025-12-06 00:18:34.989
+insert into join_table_large_3 values(86, 86);
+### 2025-12-06 00:18:34.990
+insert into join_table_large_3 values(87, 87);
+### 2025-12-06 00:18:34.990
+insert into join_table_large_3 values(88, 88);
+### 2025-12-06 00:18:34.991
+insert into join_table_large_3 values(89, 89);
+### 2025-12-06 00:18:34.991
+insert into join_table_large_3 values(90, 90);
+### 2025-12-06 00:18:34.991
+insert into join_table_large_3 values(91, 91);
+### 2025-12-06 00:18:34.992
+insert into join_table_large_3 values(92, 92);
+### 2025-12-06 00:18:34.992
+insert into join_table_large_3 values(93, 93);
+### 2025-12-06 00:18:34.992
+insert into join_table_large_3 values(94, 94);
+### 2025-12-06 00:18:34.992
+insert into join_table_large_3 values(95, 95);
+### 2025-12-06 00:18:34.993
+insert into join_table_large_3 values(96, 96);
+### 2025-12-06 00:18:34.993
+insert into join_table_large_3 values(97, 97);
+### 2025-12-06 00:18:34.993
+insert into join_table_large_3 values(98, 98);
+### 2025-12-06 00:18:34.993
+insert into join_table_large_3 values(99, 99);
+### 2025-12-06 00:18:34.994
+insert into join_table_large_3 values(100, 100);
+### 2025-12-06 00:18:34.994
+insert into join_table_large_4 values(1, 1);
+### 2025-12-06 00:18:34.994
+insert into join_table_large_4 values(2, 2);
+### 2025-12-06 00:18:34.995
+insert into join_table_large_4 values(3, 3);
+### 2025-12-06 00:18:34.995
+insert into join_table_large_4 values(4, 4);
+### 2025-12-06 00:18:34.995
+insert into join_table_large_4 values(5, 5);
+### 2025-12-06 00:18:34.995
+insert into join_table_large_4 values(6, 6);
+### 2025-12-06 00:18:34.996
+insert into join_table_large_4 values(7, 7);
+### 2025-12-06 00:18:34.996
+insert into join_table_large_4 values(8, 8);
+### 2025-12-06 00:18:34.996
+insert into join_table_large_4 values(9, 9);
+### 2025-12-06 00:18:34.996
+insert into join_table_large_4 values(10, 10);
+### 2025-12-06 00:18:34.996
+insert into join_table_large_4 values(11, 11);
+### 2025-12-06 00:18:34.997
+insert into join_table_large_4 values(12, 12);
+### 2025-12-06 00:18:34.997
+insert into join_table_large_4 values(13, 13);
+### 2025-12-06 00:18:34.997
+insert into join_table_large_4 values(14, 14);
+### 2025-12-06 00:18:34.997
+insert into join_table_large_4 values(15, 15);
+### 2025-12-06 00:18:34.998
+insert into join_table_large_4 values(16, 16);
+### 2025-12-06 00:18:34.998
+insert into join_table_large_4 values(17, 17);
+### 2025-12-06 00:18:34.998
+insert into join_table_large_4 values(18, 18);
+### 2025-12-06 00:18:34.998
+insert into join_table_large_4 values(19, 19);
+### 2025-12-06 00:18:34.999
+insert into join_table_large_4 values(20, 20);
+### 2025-12-06 00:18:34.999
+insert into join_table_large_4 values(21, 21);
+### 2025-12-06 00:18:34.999
+insert into join_table_large_4 values(22, 22);
+### 2025-12-06 00:18:34.999
+insert into join_table_large_4 values(23, 23);
+### 2025-12-06 00:18:35.000
+insert into join_table_large_4 values(24, 24);
+### 2025-12-06 00:18:35.000
+insert into join_table_large_4 values(25, 25);
+### 2025-12-06 00:18:35.000
+insert into join_table_large_4 values(26, 26);
+### 2025-12-06 00:18:35.000
+insert into join_table_large_4 values(27, 27);
+### 2025-12-06 00:18:35.000
+insert into join_table_large_4 values(28, 28);
+### 2025-12-06 00:18:35.001
+insert into join_table_large_4 values(29, 29);
+### 2025-12-06 00:18:35.001
+insert into join_table_large_4 values(30, 30);
+### 2025-12-06 00:18:35.001
+insert into join_table_large_4 values(31, 31);
+### 2025-12-06 00:18:35.001
+insert into join_table_large_4 values(32, 32);
+### 2025-12-06 00:18:35.002
+insert into join_table_large_4 values(33, 33);
+### 2025-12-06 00:18:35.002
+insert into join_table_large_4 values(34, 34);
+### 2025-12-06 00:18:35.002
+insert into join_table_large_4 values(35, 35);
+### 2025-12-06 00:18:35.002
+insert into join_table_large_4 values(36, 36);
+### 2025-12-06 00:18:35.003
+insert into join_table_large_4 values(37, 37);
+### 2025-12-06 00:18:35.003
+insert into join_table_large_4 values(38, 38);
+### 2025-12-06 00:18:35.003
+insert into join_table_large_4 values(39, 39);
+### 2025-12-06 00:18:35.004
+insert into join_table_large_4 values(40, 40);
+### 2025-12-06 00:18:35.004
+insert into join_table_large_4 values(41, 41);
+### 2025-12-06 00:18:35.004
+insert into join_table_large_4 values(42, 42);
+### 2025-12-06 00:18:35.004
+insert into join_table_large_4 values(43, 43);
+### 2025-12-06 00:18:35.005
+insert into join_table_large_4 values(44, 44);
+### 2025-12-06 00:18:35.005
+insert into join_table_large_4 values(45, 45);
+### 2025-12-06 00:18:35.005
+insert into join_table_large_4 values(46, 46);
+### 2025-12-06 00:18:35.005
+insert into join_table_large_4 values(47, 47);
+### 2025-12-06 00:18:35.005
+insert into join_table_large_4 values(48, 48);
+### 2025-12-06 00:18:35.006
+insert into join_table_large_4 values(49, 49);
+### 2025-12-06 00:18:35.006
+insert into join_table_large_4 values(50, 50);
+### 2025-12-06 00:18:35.006
+insert into join_table_large_4 values(51, 51);
+### 2025-12-06 00:18:35.006
+insert into join_table_large_4 values(52, 52);
+### 2025-12-06 00:18:35.007
+insert into join_table_large_4 values(53, 53);
+### 2025-12-06 00:18:35.007
+insert into join_table_large_4 values(54, 54);
+### 2025-12-06 00:18:35.007
+insert into join_table_large_4 values(55, 55);
+### 2025-12-06 00:18:35.007
+insert into join_table_large_4 values(56, 56);
+### 2025-12-06 00:18:35.008
+insert into join_table_large_4 values(57, 57);
+### 2025-12-06 00:18:35.008
+insert into join_table_large_4 values(58, 58);
+### 2025-12-06 00:18:35.008
+insert into join_table_large_4 values(59, 59);
+### 2025-12-06 00:18:35.008
+insert into join_table_large_4 values(60, 60);
+### 2025-12-06 00:18:35.008
+insert into join_table_large_4 values(61, 61);
+### 2025-12-06 00:18:35.009
+insert into join_table_large_4 values(62, 62);
+### 2025-12-06 00:18:35.009
+insert into join_table_large_4 values(63, 63);
+### 2025-12-06 00:18:35.009
+insert into join_table_large_4 values(64, 64);
+### 2025-12-06 00:18:35.009
+insert into join_table_large_4 values(65, 65);
+### 2025-12-06 00:18:35.009
+insert into join_table_large_4 values(66, 66);
+### 2025-12-06 00:18:35.010
+insert into join_table_large_4 values(67, 67);
+### 2025-12-06 00:18:35.010
+insert into join_table_large_4 values(68, 68);
+### 2025-12-06 00:18:35.010
+insert into join_table_large_4 values(69, 69);
+### 2025-12-06 00:18:35.010
+insert into join_table_large_4 values(70, 70);
+### 2025-12-06 00:18:35.011
+insert into join_table_large_4 values(71, 71);
+### 2025-12-06 00:18:35.011
+insert into join_table_large_4 values(72, 72);
+### 2025-12-06 00:18:35.011
+insert into join_table_large_4 values(73, 73);
+### 2025-12-06 00:18:35.011
+insert into join_table_large_4 values(74, 74);
+### 2025-12-06 00:18:35.011
+insert into join_table_large_4 values(75, 75);
+### 2025-12-06 00:18:35.012
+insert into join_table_large_4 values(76, 76);
+### 2025-12-06 00:18:35.012
+insert into join_table_large_4 values(77, 77);
+### 2025-12-06 00:18:35.012
+insert into join_table_large_4 values(78, 78);
+### 2025-12-06 00:18:35.012
+insert into join_table_large_4 values(79, 79);
+### 2025-12-06 00:18:35.012
+insert into join_table_large_4 values(80, 80);
+### 2025-12-06 00:18:35.013
+insert into join_table_large_4 values(81, 81);
+### 2025-12-06 00:18:35.013
+insert into join_table_large_4 values(82, 82);
+### 2025-12-06 00:18:35.013
+insert into join_table_large_4 values(83, 83);
+### 2025-12-06 00:18:35.013
+insert into join_table_large_4 values(84, 84);
+### 2025-12-06 00:18:35.013
+insert into join_table_large_4 values(85, 85);
+### 2025-12-06 00:18:35.014
+insert into join_table_large_4 values(86, 86);
+### 2025-12-06 00:18:35.014
+insert into join_table_large_4 values(87, 87);
+### 2025-12-06 00:18:35.014
+insert into join_table_large_4 values(88, 88);
+### 2025-12-06 00:18:35.014
+insert into join_table_large_4 values(89, 89);
+### 2025-12-06 00:18:35.014
+insert into join_table_large_4 values(90, 90);
+### 2025-12-06 00:18:35.015
+insert into join_table_large_4 values(91, 91);
+### 2025-12-06 00:18:35.015
+insert into join_table_large_4 values(92, 92);
+### 2025-12-06 00:18:35.015
+insert into join_table_large_4 values(93, 93);
+### 2025-12-06 00:18:35.015
+insert into join_table_large_4 values(94, 94);
+### 2025-12-06 00:18:35.016
+insert into join_table_large_4 values(95, 95);
+### 2025-12-06 00:18:35.016
+insert into join_table_large_4 values(96, 96);
+### 2025-12-06 00:18:35.016
+insert into join_table_large_4 values(97, 97);
+### 2025-12-06 00:18:35.016
+insert into join_table_large_4 values(98, 98);
+### 2025-12-06 00:18:35.017
+insert into join_table_large_4 values(99, 99);
+### 2025-12-06 00:18:35.017
+insert into join_table_large_4 values(100, 100);
+### 2025-12-06 00:18:35.017
+insert into join_table_large_5 values(1, 1);
+### 2025-12-06 00:18:35.017
+insert into join_table_large_5 values(2, 2);
+### 2025-12-06 00:18:35.017
+insert into join_table_large_5 values(3, 3);
+### 2025-12-06 00:18:35.018
+insert into join_table_large_5 values(4, 4);
+### 2025-12-06 00:18:35.018
+insert into join_table_large_5 values(5, 5);
+### 2025-12-06 00:18:35.018
+insert into join_table_large_5 values(6, 6);
+### 2025-12-06 00:18:35.018
+insert into join_table_large_5 values(7, 7);
+### 2025-12-06 00:18:35.018
+insert into join_table_large_5 values(8, 8);
+### 2025-12-06 00:18:35.019
+insert into join_table_large_5 values(9, 9);
+### 2025-12-06 00:18:35.019
+insert into join_table_large_5 values(10, 10);
+### 2025-12-06 00:18:35.019
+insert into join_table_large_5 values(11, 11);
+### 2025-12-06 00:18:35.019
+insert into join_table_large_5 values(12, 12);
+### 2025-12-06 00:18:35.019
+insert into join_table_large_5 values(13, 13);
+### 2025-12-06 00:18:35.020
+insert into join_table_large_5 values(14, 14);
+### 2025-12-06 00:18:35.020
+insert into join_table_large_5 values(15, 15);
+### 2025-12-06 00:18:35.020
+insert into join_table_large_5 values(16, 16);
+### 2025-12-06 00:18:35.020
+insert into join_table_large_5 values(17, 17);
+### 2025-12-06 00:18:35.020
+insert into join_table_large_5 values(18, 18);
+### 2025-12-06 00:18:35.021
+insert into join_table_large_5 values(19, 19);
+### 2025-12-06 00:18:35.021
+insert into join_table_large_5 values(20, 20);
+### 2025-12-06 00:18:35.021
+insert into join_table_large_5 values(21, 21);
+### 2025-12-06 00:18:35.021
+insert into join_table_large_5 values(22, 22);
+### 2025-12-06 00:18:35.021
+insert into join_table_large_5 values(23, 23);
+### 2025-12-06 00:18:35.022
+insert into join_table_large_5 values(24, 24);
+### 2025-12-06 00:18:35.022
+insert into join_table_large_5 values(25, 25);
+### 2025-12-06 00:18:35.022
+insert into join_table_large_5 values(26, 26);
+### 2025-12-06 00:18:35.022
+insert into join_table_large_5 values(27, 27);
+### 2025-12-06 00:18:35.022
+insert into join_table_large_5 values(28, 28);
+### 2025-12-06 00:18:35.022
+insert into join_table_large_5 values(29, 29);
+### 2025-12-06 00:18:35.023
+insert into join_table_large_5 values(30, 30);
+### 2025-12-06 00:18:35.023
+insert into join_table_large_5 values(31, 31);
+### 2025-12-06 00:18:35.023
+insert into join_table_large_5 values(32, 32);
+### 2025-12-06 00:18:35.023
+insert into join_table_large_5 values(33, 33);
+### 2025-12-06 00:18:35.023
+insert into join_table_large_5 values(34, 34);
+### 2025-12-06 00:18:35.024
+insert into join_table_large_5 values(35, 35);
+### 2025-12-06 00:18:35.024
+insert into join_table_large_5 values(36, 36);
+### 2025-12-06 00:18:35.024
+insert into join_table_large_5 values(37, 37);
+### 2025-12-06 00:18:35.024
+insert into join_table_large_5 values(38, 38);
+### 2025-12-06 00:18:35.024
+insert into join_table_large_5 values(39, 39);
+### 2025-12-06 00:18:35.025
+insert into join_table_large_5 values(40, 40);
+### 2025-12-06 00:18:35.025
+insert into join_table_large_5 values(41, 41);
+### 2025-12-06 00:18:35.025
+insert into join_table_large_5 values(42, 42);
+### 2025-12-06 00:18:35.025
+insert into join_table_large_5 values(43, 43);
+### 2025-12-06 00:18:35.025
+insert into join_table_large_5 values(44, 44);
+### 2025-12-06 00:18:35.026
+insert into join_table_large_5 values(45, 45);
+### 2025-12-06 00:18:35.026
+insert into join_table_large_5 values(46, 46);
+### 2025-12-06 00:18:35.026
+insert into join_table_large_5 values(47, 47);
+### 2025-12-06 00:18:35.026
+insert into join_table_large_5 values(48, 48);
+### 2025-12-06 00:18:35.026
+insert into join_table_large_5 values(49, 49);
+### 2025-12-06 00:18:35.026
+insert into join_table_large_5 values(50, 50);
+### 2025-12-06 00:18:35.027
+insert into join_table_large_5 values(51, 51);
+### 2025-12-06 00:18:35.027
+insert into join_table_large_5 values(52, 52);
+### 2025-12-06 00:18:35.027
+insert into join_table_large_5 values(53, 53);
+### 2025-12-06 00:18:35.027
+insert into join_table_large_5 values(54, 54);
+### 2025-12-06 00:18:35.028
+insert into join_table_large_5 values(55, 55);
+### 2025-12-06 00:18:35.028
+insert into join_table_large_5 values(56, 56);
+### 2025-12-06 00:18:35.028
+insert into join_table_large_5 values(57, 57);
+### 2025-12-06 00:18:35.028
+insert into join_table_large_5 values(58, 58);
+### 2025-12-06 00:18:35.029
+insert into join_table_large_5 values(59, 59);
+### 2025-12-06 00:18:35.029
+insert into join_table_large_5 values(60, 60);
+### 2025-12-06 00:18:35.029
+insert into join_table_large_5 values(61, 61);
+### 2025-12-06 00:18:35.029
+insert into join_table_large_5 values(62, 62);
+### 2025-12-06 00:18:35.029
+insert into join_table_large_5 values(63, 63);
+### 2025-12-06 00:18:35.030
+insert into join_table_large_5 values(64, 64);
+### 2025-12-06 00:18:35.030
+insert into join_table_large_5 values(65, 65);
+### 2025-12-06 00:18:35.030
+insert into join_table_large_5 values(66, 66);
+### 2025-12-06 00:18:35.030
+insert into join_table_large_5 values(67, 67);
+### 2025-12-06 00:18:35.030
+insert into join_table_large_5 values(68, 68);
+### 2025-12-06 00:18:35.030
+insert into join_table_large_5 values(69, 69);
+### 2025-12-06 00:18:35.031
+insert into join_table_large_5 values(70, 70);
+### 2025-12-06 00:18:35.031
+insert into join_table_large_5 values(71, 71);
+### 2025-12-06 00:18:35.031
+insert into join_table_large_5 values(72, 72);
+### 2025-12-06 00:18:35.031
+insert into join_table_large_5 values(73, 73);
+### 2025-12-06 00:18:35.031
+insert into join_table_large_5 values(74, 74);
+### 2025-12-06 00:18:35.032
+insert into join_table_large_5 values(75, 75);
+### 2025-12-06 00:18:35.032
+insert into join_table_large_5 values(76, 76);
+### 2025-12-06 00:18:35.032
+insert into join_table_large_5 values(77, 77);
+### 2025-12-06 00:18:35.032
+insert into join_table_large_5 values(78, 78);
+### 2025-12-06 00:18:35.032
+insert into join_table_large_5 values(79, 79);
+### 2025-12-06 00:18:35.032
+insert into join_table_large_5 values(80, 80);
+### 2025-12-06 00:18:35.033
+insert into join_table_large_5 values(81, 81);
+### 2025-12-06 00:18:35.033
+insert into join_table_large_5 values(82, 82);
+### 2025-12-06 00:18:35.033
+insert into join_table_large_5 values(83, 83);
+### 2025-12-06 00:18:35.033
+insert into join_table_large_5 values(84, 84);
+### 2025-12-06 00:18:35.034
+insert into join_table_large_5 values(85, 85);
+### 2025-12-06 00:18:35.034
+insert into join_table_large_5 values(86, 86);
+### 2025-12-06 00:18:35.034
+insert into join_table_large_5 values(87, 87);
+### 2025-12-06 00:18:35.034
+insert into join_table_large_5 values(88, 88);
+### 2025-12-06 00:18:35.034
+insert into join_table_large_5 values(89, 89);
+### 2025-12-06 00:18:35.035
+insert into join_table_large_5 values(90, 90);
+### 2025-12-06 00:18:35.035
+insert into join_table_large_5 values(91, 91);
+### 2025-12-06 00:18:35.035
+insert into join_table_large_5 values(92, 92);
+### 2025-12-06 00:18:35.035
+insert into join_table_large_5 values(93, 93);
+### 2025-12-06 00:18:35.035
+insert into join_table_large_5 values(94, 94);
+### 2025-12-06 00:18:35.036
+insert into join_table_large_5 values(95, 95);
+### 2025-12-06 00:18:35.036
+insert into join_table_large_5 values(96, 96);
+### 2025-12-06 00:18:35.036
+insert into join_table_large_5 values(97, 97);
+### 2025-12-06 00:18:35.037
+insert into join_table_large_5 values(98, 98);
+### 2025-12-06 00:18:35.037
+insert into join_table_large_5 values(99, 99);
+### 2025-12-06 00:18:35.037
+insert into join_table_large_5 values(100, 100);
+### 2025-12-06 00:18:35.037
+insert into join_table_large_6 values(1, 1);
+### 2025-12-06 00:18:35.037
+insert into join_table_large_6 values(2, 2);
+### 2025-12-06 00:18:35.037
+insert into join_table_large_6 values(3, 3);
+### 2025-12-06 00:18:35.038
+insert into join_table_large_6 values(4, 4);
+### 2025-12-06 00:18:35.038
+insert into join_table_large_6 values(5, 5);
+### 2025-12-06 00:18:35.038
+insert into join_table_large_6 values(6, 6);
+### 2025-12-06 00:18:35.038
+insert into join_table_large_6 values(7, 7);
+### 2025-12-06 00:18:35.038
+insert into join_table_large_6 values(8, 8);
+### 2025-12-06 00:18:35.038
+insert into join_table_large_6 values(9, 9);
+### 2025-12-06 00:18:35.039
+insert into join_table_large_6 values(10, 10);
+### 2025-12-06 00:18:35.039
+insert into join_table_large_6 values(11, 11);
+### 2025-12-06 00:18:35.039
+insert into join_table_large_6 values(12, 12);
+### 2025-12-06 00:18:35.039
+insert into join_table_large_6 values(13, 13);
+### 2025-12-06 00:18:35.039
+insert into join_table_large_6 values(14, 14);
+### 2025-12-06 00:18:35.039
+insert into join_table_large_6 values(15, 15);
+### 2025-12-06 00:18:35.040
+insert into join_table_large_6 values(16, 16);
+### 2025-12-06 00:18:35.040
+insert into join_table_large_6 values(17, 17);
+### 2025-12-06 00:18:35.040
+insert into join_table_large_6 values(18, 18);
+### 2025-12-06 00:18:35.040
+insert into join_table_large_6 values(19, 19);
+### 2025-12-06 00:18:35.040
+insert into join_table_large_6 values(20, 20);
+### 2025-12-06 00:18:35.041
+insert into join_table_large_6 values(21, 21);
+### 2025-12-06 00:18:35.041
+insert into join_table_large_6 values(22, 22);
+### 2025-12-06 00:18:35.041
+insert into join_table_large_6 values(23, 23);
+### 2025-12-06 00:18:35.041
+insert into join_table_large_6 values(24, 24);
+### 2025-12-06 00:18:35.042
+insert into join_table_large_6 values(25, 25);
+### 2025-12-06 00:18:35.042
+insert into join_table_large_6 values(26, 26);
+### 2025-12-06 00:18:35.042
+insert into join_table_large_6 values(27, 27);
+### 2025-12-06 00:18:35.042
+insert into join_table_large_6 values(28, 28);
+### 2025-12-06 00:18:35.042
+insert into join_table_large_6 values(29, 29);
+### 2025-12-06 00:18:35.042
+insert into join_table_large_6 values(30, 30);
+### 2025-12-06 00:18:35.043
+insert into join_table_large_6 values(31, 31);
+### 2025-12-06 00:18:35.043
+insert into join_table_large_6 values(32, 32);
+### 2025-12-06 00:18:35.043
+insert into join_table_large_6 values(33, 33);
+### 2025-12-06 00:18:35.043
+insert into join_table_large_6 values(34, 34);
+### 2025-12-06 00:18:35.043
+insert into join_table_large_6 values(35, 35);
+### 2025-12-06 00:18:35.044
+insert into join_table_large_6 values(36, 36);
+### 2025-12-06 00:18:35.044
+insert into join_table_large_6 values(37, 37);
+### 2025-12-06 00:18:35.044
+insert into join_table_large_6 values(38, 38);
+### 2025-12-06 00:18:35.044
+insert into join_table_large_6 values(39, 39);
+### 2025-12-06 00:18:35.044
+insert into join_table_large_6 values(40, 40);
+### 2025-12-06 00:18:35.045
+insert into join_table_large_6 values(41, 41);
+### 2025-12-06 00:18:35.045
+insert into join_table_large_6 values(42, 42);
+### 2025-12-06 00:18:35.045
+insert into join_table_large_6 values(43, 43);
+### 2025-12-06 00:18:35.045
+insert into join_table_large_6 values(44, 44);
+### 2025-12-06 00:18:35.045
+insert into join_table_large_6 values(45, 45);
+### 2025-12-06 00:18:35.046
+insert into join_table_large_6 values(46, 46);
+### 2025-12-06 00:18:35.046
+insert into join_table_large_6 values(47, 47);
+### 2025-12-06 00:18:35.046
+insert into join_table_large_6 values(48, 48);
+### 2025-12-06 00:18:35.046
+insert into join_table_large_6 values(49, 49);
+### 2025-12-06 00:18:35.046
+insert into join_table_large_6 values(50, 50);
+### 2025-12-06 00:18:35.047
+insert into join_table_large_6 values(51, 51);
+### 2025-12-06 00:18:35.047
+insert into join_table_large_6 values(52, 52);
+### 2025-12-06 00:18:35.047
+insert into join_table_large_6 values(53, 53);
+### 2025-12-06 00:18:35.047
+insert into join_table_large_6 values(54, 54);
+### 2025-12-06 00:18:35.047
+insert into join_table_large_6 values(55, 55);
+### 2025-12-06 00:18:35.047
+insert into join_table_large_6 values(56, 56);
+### 2025-12-06 00:18:35.048
+insert into join_table_large_6 values(57, 57);
+### 2025-12-06 00:18:35.048
+insert into join_table_large_6 values(58, 58);
+### 2025-12-06 00:18:35.048
+insert into join_table_large_6 values(59, 59);
+### 2025-12-06 00:18:35.048
+insert into join_table_large_6 values(60, 60);
+### 2025-12-06 00:18:35.049
+insert into join_table_large_6 values(61, 61);
+### 2025-12-06 00:18:35.049
+insert into join_table_large_6 values(62, 62);
+### 2025-12-06 00:18:35.049
+insert into join_table_large_6 values(63, 63);
+### 2025-12-06 00:18:35.049
+insert into join_table_large_6 values(64, 64);
+### 2025-12-06 00:18:35.049
+insert into join_table_large_6 values(65, 65);
+### 2025-12-06 00:18:35.050
+insert into join_table_large_6 values(66, 66);
+### 2025-12-06 00:18:35.050
+insert into join_table_large_6 values(67, 67);
+### 2025-12-06 00:18:35.050
+insert into join_table_large_6 values(68, 68);
+### 2025-12-06 00:18:35.050
+insert into join_table_large_6 values(69, 69);
+### 2025-12-06 00:18:35.051
+insert into join_table_large_6 values(70, 70);
+### 2025-12-06 00:18:35.051
+insert into join_table_large_6 values(71, 71);
+### 2025-12-06 00:18:35.051
+insert into join_table_large_6 values(72, 72);
+### 2025-12-06 00:18:35.051
+insert into join_table_large_6 values(73, 73);
+### 2025-12-06 00:18:35.051
+insert into join_table_large_6 values(74, 74);
+### 2025-12-06 00:18:35.052
+insert into join_table_large_6 values(75, 75);
+### 2025-12-06 00:18:35.052
+insert into join_table_large_6 values(76, 76);
+### 2025-12-06 00:18:35.052
+insert into join_table_large_6 values(77, 77);
+### 2025-12-06 00:18:35.052
+insert into join_table_large_6 values(78, 78);
+### 2025-12-06 00:18:35.053
+insert into join_table_large_6 values(79, 79);
+### 2025-12-06 00:18:35.053
+insert into join_table_large_6 values(80, 80);
+### 2025-12-06 00:18:35.053
+insert into join_table_large_6 values(81, 81);
+### 2025-12-06 00:18:35.053
+insert into join_table_large_6 values(82, 82);
+### 2025-12-06 00:18:35.054
+insert into join_table_large_6 values(83, 83);
+### 2025-12-06 00:18:35.054
+insert into join_table_large_6 values(84, 84);
+### 2025-12-06 00:18:35.054
+insert into join_table_large_6 values(85, 85);
+### 2025-12-06 00:18:35.054
+insert into join_table_large_6 values(86, 86);
+### 2025-12-06 00:18:35.054
+insert into join_table_large_6 values(87, 87);
+### 2025-12-06 00:18:35.055
+insert into join_table_large_6 values(88, 88);
+### 2025-12-06 00:18:35.055
+insert into join_table_large_6 values(89, 89);
+### 2025-12-06 00:18:35.055
+insert into join_table_large_6 values(90, 90);
+### 2025-12-06 00:18:35.055
+insert into join_table_large_6 values(91, 91);
+### 2025-12-06 00:18:35.055
+insert into join_table_large_6 values(92, 92);
+### 2025-12-06 00:18:35.055
+insert into join_table_large_6 values(93, 93);
+### 2025-12-06 00:18:35.056
+insert into join_table_large_6 values(94, 94);
+### 2025-12-06 00:18:35.056
+insert into join_table_large_6 values(95, 95);
+### 2025-12-06 00:18:35.056
+insert into join_table_large_6 values(96, 96);
+### 2025-12-06 00:18:35.056
+insert into join_table_large_6 values(97, 97);
+### 2025-12-06 00:18:35.056
+insert into join_table_large_6 values(98, 98);
+### 2025-12-06 00:18:35.057
+insert into join_table_large_6 values(99, 99);
+### 2025-12-06 00:18:35.057
+insert into join_table_large_6 values(100, 100);
+### 2025-12-06 00:18:35.057
+select * from join_table_large_1 inner join join_table_large_2 on join_table_large_1.id=join_table_large_2.id inner join join_table_large_3 on join_table_large_1.id=join_table_large_3.id inner join join_table_large_4 on join_table_large_3.id=join_table_large_4.id inner join join_table_large_5 on join_table_large_4.id<join_table_large_5.id inner join join_table_large_6 on join_table_large_5.id=join_table_large_6.id where join_table_large_3.num3 <10 and join_table_large_5.num5>90;
+### 2025-12-06 00:19:22.872
+insert into t3 values(2, 20);
+### 2025-12-06 00:19:22.873
+insert into t5 values(92, 92);
+### 2025-12-06 00:19:22.873
+explain select * from t3, t5 where t3.num3 <10 and t5.num5>90;
+### 2025-12-06 00:19:22.874
+select * from t3, t5 where t3.num3 <10 and t5.num5>90;
+### 2025-12-06 00:19:52.924
+insert into t1 values(2, 20);
+### 2025-12-06 00:19:52.924
+insert into t2 values(1, 100);
+### 2025-12-06 00:19:52.925
+insert into t2 values(2, 200);
+### 2025-12-06 00:19:52.925
+explain select * from t1 inner join t2 on t1.id=t2.id where t1.num1<10;
+### 2025-12-06 00:20:23.749
+explain select * from t1 inner join t2 on t1.id=t2.id inner join t3 on t1.id=t3.id inner join t4 on t3.id=t4.id inner join t5 on t4.id<t5.id inner join t6 on t5.id=t6.id where t3.num3 <10 and t5.num5>90;
+### 2025-12-06 00:21:56.014
+select * from t1 inner join t2 on t1.id=t2.id where t1.num1<10;
+### 2025-12-06 00:25:39.389
+CREATE TABLE join_table_1(id int, name char);
+### 2025-12-06 00:25:39.399
+CREATE TABLE join_table_2(id int, num int);
+### 2025-12-06 00:25:39.406
+INSERT INTO join_table_1 VALUES (1, 'a');
+### 2025-12-06 00:25:39.407
+INSERT INTO join_table_1 VALUES (2, 'b');
+### 2025-12-06 00:25:39.407
+INSERT INTO join_table_2 VALUES (1, 2);
+### 2025-12-06 00:25:39.408
+INSERT INTO join_table_2 VALUES (2, 15);
+### 2025-12-06 00:25:39.408
+set hash_join = 1;
+### 2025-12-06 00:25:39.408
+select * from join_table_1 inner join join_table_2 on join_table_1.id = join_table_2.id;
+### 2025-12-06 00:29:05.324
+create table t1(id int, num1 int);
+### 2025-12-06 00:29:05.331
+create table t2(id int, num2 int);
+### 2025-12-06 00:29:05.337
+create table t3(id int, num3 int);
+### 2025-12-06 00:29:05.343
+create table t4(id int, num4 int);
+### 2025-12-06 00:29:05.349
+create table t5(id int, num5 int);
+### 2025-12-06 00:29:05.354
+create table t6(id int, num6 int);
+### 2025-12-06 00:29:05.360
+insert into t1 values(1, 1);
+### 2025-12-06 00:29:05.361
+insert into t2 values(1, 1);
+### 2025-12-06 00:29:05.361
+insert into t3 values(1, 1);
+### 2025-12-06 00:29:05.361
+insert into t4 values(1, 1);
+### 2025-12-06 00:29:05.362
+insert into t5 values(91, 91);
+### 2025-12-06 00:29:05.362
+insert into t6 values(91, 91);
+### 2025-12-06 00:29:05.362
+select * from t1 inner join t2 on t1.id=t2.id inner join t3 on t1.id=t3.id inner join t4 on t3.id=t4.id inner join t5 on t4.id<t5.id inner join t6 on t5.id=t6.id where t3.num3 <10 and t5.num5>90;
+### 2025-12-06 00:29:05.364
+select * from t1 inner join t2 on t1.id=t2.id inner join t3 on t1.id=t3.id inner join t4 on t3.id=t4.id inner join t5 on t4.id<t5.id inner join t6 on t5.id=t6.id;
+### 2025-12-06 00:29:21.636
+select * from t1 inner join t2 on t1.id=t2.id inner join t3 on t1.id=t3.id inner join t4 on t3.id=t4.id;
+### 2025-12-06 00:29:39.330
+create table t4(id int);
+### 2025-12-06 00:29:39.337
+create table t5(id int);
+### 2025-12-06 00:29:39.346
+insert into t4 values(1);
+### 2025-12-06 00:29:39.346
+insert into t5 values(91);
+### 2025-12-06 00:29:39.347
+explain select * from t1 inner join t2 on t1.id=t2.id inner join t3 on t1.id=t3.id inner join t4 on t3.id=t4.id inner join t5 on t4.id<t5.id;
+### 2025-12-06 00:29:39.349
+select * from t1 inner join t2 on t1.id=t2.id inner join t3 on t1.id=t3.id inner join t4 on t3.id=t4.id inner join t5 on t4.id<t5.id;
+### 2025-12-06 00:30:45.169
+insert into t1 values(2);
+### 2025-12-06 00:30:45.169
+insert into t2 values(2);
+### 2025-12-06 00:30:45.170
+insert into t3 values(3);
+### 2025-12-06 00:30:45.170
+select * from t1 inner join t2 on t1.id=t2.id inner join t3 on t1.id<t3.id;
+### 2025-12-06 00:31:01.928
+explain select * from t1 inner join t2 on t1.id=t2.id inner join t3 on t2.id<t3.id;
+### 2025-12-06 00:31:17.970
+select * from t1 inner join t2 on t1.id=t2.id;
+### 2025-12-06 00:31:31.169
+insert into t3 values(1);
+### 2025-12-06 00:31:31.170
+select * from t1 inner join t2 on t1.id=t2.id inner join t3 on t1.id=t3.id;
+### 2025-12-06 00:36:01.956
+create database test_db;
+### 2025-12-06 00:36:01.965
+use test_db;
+### 2025-12-06 00:36:01.966
+create table t1(id int);
+### 2025-12-06 00:36:01.981
+create table t2(id int);
+### 2025-12-06 00:36:01.990
+create table t3(id int);
+### 2025-12-06 00:36:01.998
+insert into t1 values(1);
+### 2025-12-06 00:36:01.998
+insert into t2 values(1);
+### 2025-12-06 00:36:01.999
+insert into t3 values(2);
+### 2025-12-06 00:36:01.999
+select * from t1 inner join t2 on t1.id=t2.id inner join t3 on t2.id<t3.id;
+### 2025-12-06 00:36:02.000
+exit
+### 2025-12-09 21:49:44.621
+set hash_join=1;
